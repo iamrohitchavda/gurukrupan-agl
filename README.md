@@ -15,10 +15,12 @@ The repository begins on the `dev` branch. `main` is reserved for stable release
 
 ## Requirements
 
-- Node.js (current LTS recommended)
+- Node.js 20.0 or later (current LTS recommended)
 - npm
 
 Rust is not required. On a Windows development computer, Electron may request Microsoft C++ Build Tools if a native SQLite dependency needs to compile.
+
+The project uses Vite 6 for compatibility with Node.js 20, avoiding frontend native-binding requirements during normal development.
 
 ## Run locally
 
