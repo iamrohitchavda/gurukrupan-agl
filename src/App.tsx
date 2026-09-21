@@ -1,49 +1,46 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/core";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+  const [databaseMessage, setDatabaseMessage] = useState("Checking local database…");
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
-  }
+  useEffect(() => {
+    if (!window.gurukrupan) {
+      setDatabaseMessage("Browser preview mode — local desktop database is unavailable.");
+      return;
+    }
+
+    window.gurukrupan.database.getStatus()
+      .then((status) => {
+        setDatabaseMessage(
+          status.ready
+            ? `Local SQLite database ready (${status.recordCount} metadata records).`
+            : "Local database is unavailable.",
+        );
+      })
+      .catch(() => setDatabaseMessage("Could not open the local database."));
+  }, []);
 
   return (
-    <main className="container">
-      <h1>Welcome to Tauri + React</h1>
+    <main className="app-shell">
+      <section className="hero">
+        <p className="eyebrow">Desktop workspace</p>
+        <h1>Gurukrupan AGL</h1>
+        <p className="intro">A local-first application, ready for secure multi-PC synchronization.</p>
+      </section>
 
-      <div className="row">
-        <a href="https://vite.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
+      <section className="status-card" aria-live="polite">
+        <span className="status-dot" />
+        <div>
+          <h2>Data status</h2>
+          <p>{databaseMessage}</p>
+        </div>
+      </section>
 
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
+      <section className="next-card">
+        <h2>Foundation ready</h2>
+        <p>Build the business modules here. Each PC will keep local data and synchronize with the main PC when it is available.</p>
+      </section>
     </main>
   );
 }

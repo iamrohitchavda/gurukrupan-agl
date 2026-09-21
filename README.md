@@ -1,14 +1,15 @@
 # Gurukrupan AGL
 
-Gurukrupan AGL is a Windows desktop application built with React, TypeScript, Vite, and Tauri.
+Gurukrupan AGL is a Windows desktop application built with React, TypeScript, Vite, and Electron.
 
 ## Current setup
 
-- **Desktop shell:** Tauri v2 (Rust)
+- **Desktop shell:** Electron
 - **User interface:** React 19 + TypeScript
 - **Frontend tooling:** Vite
+- **Local data:** SQLite, accessed only from Electron's main process
 - **Package manager:** npm
-- **Target:** Windows desktop, with the option to support other Tauri platforms later
+- **Target:** Windows desktop, with the option to support other Electron platforms later
 
 The repository begins on the `dev` branch. `main` is reserved for stable releases.
 
@@ -16,16 +17,14 @@ The repository begins on the `dev` branch. `main` is reserved for stable release
 
 - Node.js (current LTS recommended)
 - npm
-- Rust stable toolchain (`rustup`)
-- Windows development prerequisites required by Tauri when building on Windows
 
-See the [Tauri prerequisites guide](https://v2.tauri.app/start/prerequisites/) for the platform-specific setup.
+Rust is not required. On a Windows development computer, Electron may request Microsoft C++ Build Tools if a native SQLite dependency needs to compile.
 
 ## Run locally
 
 ```bash
 npm install
-npm run tauri dev
+npm run dev:desktop
 ```
 
 For a browser-only UI session:
@@ -38,15 +37,17 @@ npm run dev
 
 ```bash
 npm run build
-npm run tauri build
+npm run package:win
 ```
 
 ## Planned data architecture
 
-The desktop app will use a local SQLite database so it can work offline. If multi-PC support is added, each installation will retain its local database and exchange changes through a central sync service. This avoids sharing a live SQLite file across the network.
+Each installation stores data in its own local SQLite database, so it can work offline. SQLite is accessed in Electron's main process; the React interface receives only explicitly approved data through a secure IPC bridge.
+
+For multi-PC support, PC 1 will run a sync API and a master PostgreSQL database. Each installation will upload its pending local changes when PC 1 is available, then download changes made by other PCs. This avoids sharing a live SQLite file across the network. If PC 1 is offline, other PCs continue to work locally and sync later.
 
 ## Repository conventions
 
 - Build work on `dev`; merge tested, stable work into `main`.
-- Never commit `.env` files, SQLite database files, or Tauri/Rust build output.
+- Never commit `.env` files, SQLite database files, or generated build output.
 - Update this README whenever setup, architecture, commands, or developer requirements change.
