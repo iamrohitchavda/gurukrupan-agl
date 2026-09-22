@@ -50,8 +50,8 @@ export const initialFile = {
   purchaseTerms: "Commodity must confirm to the specific quality and weight. Shipping marks must be printed on each bag. Transport charges are paid by the supplier before dispatch. Subject to Rajkot jurisdiction, Gujarat.",
   contractTerms: "Delivery by sea container on CNF Jebel Ali, UAE basis as per Incoterms 2020. Export standard packing suitable for sea freight. Buyer arranges insurance. Partial shipment and trans-shipment are not allowed.",
   items: [
-    { id: "1", packages: "900 bags packed in 10 KGS PP bags each", product: "Indian Bay Leaf (Tejpatta)", hsCode: "09109990", quantity: "9.000", unit: "MT Net", rate: "735.00", amount: "6615.00" },
-    { id: "2", packages: "50 boxes; each box contains 40 jars of 250 grams each", product: "Indian Bay Leaf (Tejpatta)", hsCode: "09109990", quantity: "0.500", unit: "MT Net", rate: "735.00", amount: "367.50" },
+    { id: "1", packages: "900 bags packed in 10 KGS PP bags each", product: "Indian Bay Leaf (Tejpatta)", hsCode: "09109990", quantity: "9.000", unit: "MT Net", gross: "9.900 MT", remarks: "", rate: "735.00", amount: "6615.00" },
+    { id: "2", packages: "50 boxes; each box contains 40 jars of 250 grams each", product: "Indian Bay Leaf (Tejpatta)", hsCode: "09109990", quantity: "0.500", unit: "MT Net", gross: "0.550 MT", remarks: "", rate: "735.00", amount: "367.50" },
   ],
 };
 

@@ -1,22 +1,38 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { company, customers, documentItems, documentSteps, exportFiles, initialFile, sourceContent, suppliers } from "./exportData.js";
 import "./styles.css";
 import "./extra.css";
 
 const fieldsByDocument = {
-  purchaseOrder: ["supplier", "reference", "invoiceDate", "purchaseTerms"],
-  salesContract: ["buyer", "reference", "container", "incoterm", "portDischarge", "contractTerms"],
+  purchaseOrder: ["supplier", "purchaseTerms"],
+  salesContract: ["buyer", "container", "incoterm", "portDischarge", "contractTerms"],
   customsInvoice: ["buyer", "notifyParty", "reference", "invoiceDate", "paymentTerms", "container", "origin", "destination", "portLoading", "portDischarge", "commission"],
   commercialInvoice: ["buyer", "notifyParty", "reference", "invoiceDate", "billNo", "billDate", "shippingBillNo", "shippingBillDate", "paymentTerms", "container", "vesselVoyage"],
   packingList: ["buyer", "notifyParty", "reference", "invoiceDate", "billNo", "billDate", "containerNo", "sealNo", "marks", "packageCount", "netWeight", "grossWeight"],
+};
+
+const exactLabels = {
+  purchaseOrder: { supplier: "SELLER", purchaseTerms: "TERMS & CONDITIONS" },
+  salesContract: { buyer: "BUYER", container: "FCL", incoterm: "DELIVERY TERMS", portDischarge: "PORT OF DISCHARGE", contractTerms: "TERMS & CONDITIONS" },
+  customsInvoice: { buyer: "CONSIGNEE :-", notifyParty: "NOTIFY PARTY :-", reference: "INVOICE NO.", invoiceDate: "INVOICE DT.", paymentTerms: "PAYMENT TERMS", container: "CONTAINER", origin: "COUNTRY OF ORIGIN OF GOODS", destination: "COUNTRY OF FINAL DESTINATION", portLoading: "PORT OF LOADING", portDischarge: "PORT OF DISCHARGE", commission: "COMMISSION" },
+  commercialInvoice: { buyer: "CONSIGNEE:", notifyParty: "NOTIFY PARTY:-", reference: "INVOICE NO.", invoiceDate: "INVOICE DT.", billNo: "B/L NO.", billDate: "B/L DT.", shippingBillNo: "SB NO.", shippingBillDate: "SB DT.", paymentTerms: "PAYMENT TERMS", container: "CONTAINER", vesselVoyage: "VESSEL / VOYAGE" },
+  packingList: { buyer: "CONSIGNEE:-", notifyParty: "NOTIFY PARTY:-", reference: "INVOICE NO.", invoiceDate: "INVOICE DT.", billNo: "B/L NO.", billDate: "B/L DT.", containerNo: "CONTAINER NO.", sealNo: "SEAL NO.", marks: "MARKS & NO.", packageCount: "TOTAL PACKAGES", netWeight: "TOTAL NET WEIGHT", grossWeight: "TOTAL GROSS WEIGHT" },
+};
+
+const exactTableHeaders = {
+  purchaseOrder: ["KIND OF PKGS.", "DESCRIPTION OF COMMODITIES", "HS CODE", "QUANTITY", "RATE", "AMOUNT"],
+  salesContract: ["KIND OF PKGS.", "DESCRIPTION OF COMMODITIES", "HS CODE", "QUANTITY", "RATE US$", "AMOUNT"],
+  customsInvoice: ["NO. & KIND OF PKGS", "DESCRIPTION OF COMMODITIES", "HS CODE", "QUANTITY", "RATE US$", "AMOUNT"],
+  commercialInvoice: ["KIND OF PKGS.", "DESCRIPTION OF COMMODITIES", "HS CODE", "QUANTITY", "RATE USD", "AMOUNT"],
+  packingList: ["KIND OF PKGS.", "DESCRIPTION OF COMMODITIES", "QUANTITY", "GROSS WT.", "REMARKS"],
 };
 
 const meta = {
   reference: ["File / invoice reference", "text"], buyer: ["Buyer / customer", "customer"], supplier: ["Supplier", "supplier"], invoiceDate: ["Invoice date", "date"], notifyParty: ["Notify party", "text"], paymentTerms: ["Payment terms", "text"], container: ["Container", "text"], origin: ["Country of origin", "text"], destination: ["Final destination", "text"], portLoading: ["Port of loading", "text"], portDischarge: ["Port of discharge", "text"], vesselVoyage: ["Vessel / voyage", "text"], incoterm: ["Incoterm", "text"], commission: ["Commission", "text"], billNo: ["B/L number", "text"], billDate: ["B/L date", "date"], shippingBillNo: ["Shipping bill number", "text"], shippingBillDate: ["Shipping bill date", "date"], containerNo: ["Container number", "text"], sealNo: ["Seal number", "text"], packageCount: ["Total packages", "text"], netWeight: ["Total net weight", "text"], grossWeight: ["Total gross weight", "text"], marks: ["Marks & numbers", "textarea"], purchaseTerms: ["Purchase order terms", "textarea"], contractTerms: ["Sales contract terms", "textarea"],
 };
 
-function Field({ name, value, onChange }) {
-  const [label, type] = meta[name];
+function Field({ name, value, onChange, label }) {
+  const [, type] = meta[name];
   if (type === "customer" || type === "supplier") {
     const options = type === "customer" ? customers : suppliers;
     return <label className="field"><span>{label}</span><select value={value} onChange={(event) => onChange(name, event.target.value)}>{options.map((option) => <option key={option}>{option}</option>)}</select></label>;
@@ -25,9 +41,11 @@ function Field({ name, value, onChange }) {
   return <label className="field"><span>{label}</span><input type={type} value={value} onChange={(event) => onChange(name, event.target.value)} /></label>;
 }
 
-function ItemTable({ items, onChange }) {
+function ItemTable({ items, onChange, active }) {
   const edit = (id, key, value) => onChange(items.map((item) => item.id === id ? { ...item, [key]: value } : item));
-  return <section className="card items"><div className="section-title"><div><small>GOODS</small><h2>Commodity lines</h2></div><span>{items.length} lines</span></div><div className="table-wrap"><table><thead><tr><th>Packages / packing</th><th>Commodity</th><th>HS code</th><th>Quantity</th><th>Rate USD</th><th>Amount USD</th></tr></thead><tbody>{items.map((item) => <tr key={item.id}><td><textarea value={item.packages} onChange={(event) => edit(item.id, "packages", event.target.value)} /></td><td><input value={item.product} onChange={(event) => edit(item.id, "product", event.target.value)} /></td><td><input value={item.hsCode} onChange={(event) => edit(item.id, "hsCode", event.target.value)} /></td><td><input value={item.quantity} onChange={(event) => edit(item.id, "quantity", event.target.value)} /><small>{item.unit}</small></td><td><input value={item.rate} onChange={(event) => edit(item.id, "rate", event.target.value)} /></td><td><input value={item.amount} onChange={(event) => edit(item.id, "amount", event.target.value)} /></td></tr>)}</tbody></table></div></section>;
+  const headers = exactTableHeaders[active];
+  const isPackingList = active === "packingList";
+  return <section className="card items"><div className="section-title"><div><small>GOODS</small><h2>Commodity lines</h2></div><span>{items.length} lines</span></div><div className="table-wrap"><table><thead><tr>{headers.map((header) => <th key={header}>{header}</th>)}</tr></thead><tbody>{items.map((item) => <tr key={item.id}><td><textarea value={item.packages} onChange={(event) => edit(item.id, "packages", event.target.value)} /></td><td><input value={item.product} onChange={(event) => edit(item.id, "product", event.target.value)} />{isPackingList && <small>HS CODE: {item.hsCode}</small>}</td>{!isPackingList && <td><input value={item.hsCode} onChange={(event) => edit(item.id, "hsCode", event.target.value)} /></td>}<td><input value={item.quantity} onChange={(event) => edit(item.id, "quantity", event.target.value)} /><small>{item.unit}</small></td>{isPackingList ? <><td><input value={item.gross ?? ""} onChange={(event) => edit(item.id, "gross", event.target.value)} /></td><td><input value={item.remarks ?? ""} onChange={(event) => edit(item.id, "remarks", event.target.value)} /></td></> : <><td><input value={item.rate} onChange={(event) => edit(item.id, "rate", event.target.value)} /></td><td><input value={item.amount} onChange={(event) => edit(item.id, "amount", event.target.value)} /></td></>}</tr>)}</tbody></table></div></section>;
 }
 
 function SourceDetail({ active }) {
@@ -45,7 +63,14 @@ function Preview({ document, data, items, total }) {
 }
 
 function App() {
-  const [files, setFiles] = useState(exportFiles);
+  const [files, setFiles] = useState(() => {
+    try {
+      const saved = window.localStorage.getItem("gurukrupan-export-files");
+      return saved ? JSON.parse(saved) : exportFiles;
+    } catch {
+      return exportFiles;
+    }
+  });
   const [fileId, setFileId] = useState(exportFiles[0].id);
   const [active, setActive] = useState("purchaseOrder");
   const [view, setView] = useState("form");
@@ -56,11 +81,14 @@ function App() {
   const items = data.documentItems?.[active] ?? documentItems[active];
   const total = useMemo(() => items.reduce((sum, item) => sum + (Number(item.amount) || 0), 0).toFixed(2), [items]);
   const updateFile = (mutator) => setFiles((current) => current.map((item) => item.id === fileId ? mutator(item) : item));
+  useEffect(() => {
+    window.localStorage.setItem("gurukrupan-export-files", JSON.stringify(files));
+  }, [files]);
   const update = (name, value) => updateFile((item) => ({ ...item, data: { ...item.data, [name]: value } }));
   const updateItems = (nextItems) => updateFile((item) => ({ ...item, data: { ...item.data, documentItems: { ...item.data.documentItems, [active]: nextItems } } }));
   const validate = () => {
     const missing = fieldsByDocument[active].filter((field) => !String(data[field] || "").trim());
-    if (missing.length) return setNotice(`Missing: ${missing.map((field) => meta[field][0]).join(", ")}`);
+    if (missing.length) return setNotice(`Missing: ${missing.map((field) => exactLabels[active][field]).join(", ")}`);
     updateFile((item) => ({ ...item, stage: `${document.title} ready`, data: { ...item.data, completed: { ...item.data.completed, [active]: true } } }));
     setNotice(`${document.title} is saved as ready. You can return to this export file and edit it at any time.`);
   };
@@ -72,7 +100,7 @@ function App() {
     setFileId(id); setActive("purchaseOrder"); setView("form"); setNotice("New export file created. Select the buyer, supplier, and complete each document in sequence.");
   };
 
-  return <div className="shell"><aside><div className="brand"><i>GA</i><div><b>Gurukrupan</b><small>Export documents</small></div></div><button className="new" onClick={newFile}>+ New export file</button><p className="nav-title">CUSTOMER EXPORT FILES</p><div className="file-list">{files.map((item) => <button className={`file-select ${item.id === fileId ? "selected" : ""}`} key={item.id} onClick={() => { setFileId(item.id); setNotice(""); }}><b>{item.label}</b><small>{item.stage}</small></button>)}</div><p className="nav-title">DOCUMENT FLOW</p>{documentSteps.map((step, index) => <button key={step.id} className={`step ${active === step.id ? "active" : ""}`} onClick={() => { setActive(step.id); setNotice(""); }}><i>{index + 1}</i><span><b>{step.title}</b><small>{data.completed?.[step.id] ? "Ready - click to edit" : step.party}</small></span></button>)}<div className="file-ref"><small>ACTIVE EXPORT FILE</small><b>{data.reference}</b><span>{file.stage}</span></div></aside><main><header className="top"><div><p>{file.customer} / {data.reference}</p><h1>{document.title}</h1></div><div className="tabs"><button className={view === "form" ? "chosen" : ""} onClick={() => setView("form")}>Edit form</button><button className={view === "preview" ? "chosen" : ""} onClick={() => setView("preview")}>A4 preview</button></div></header>{view === "form" ? <div className="content"><section className="summary"><div><small>BUYER / CUSTOMER</small><b>{data.buyer}</b></div><div><small>SUPPLIER</small><b>{data.supplier}</b></div><div><small>DOCUMENT TOTAL</small><b>USD {total}</b></div><div><small>STATUS</small><b className={data.completed?.[active] ? "ready" : "draft"}>{data.completed?.[active] ? "Ready" : "Draft"}</b></div></section><section className="card"><div className="section-title"><div><small>{document.short} · {document.party}</small><h2>Editable document fields</h2></div><button className="validate" onClick={validate}>Validate & save</button></div>{notice && <p className={`message ${notice.startsWith("Missing") ? "bad" : "good"}`}>{notice}</p>}<div className="fields">{fieldsByDocument[active].map((field) => <Field key={field} name={field} value={data[field]} onChange={update} />)}</div></section><ItemTable items={items} onChange={updateItems} /><SourceDetail active={active} /></div> : <div className="preview-area"><div className="preview-bar"><span>Preview includes fixed text and editable values for this document.</span><div><button onClick={() => setView("form")}>Back to editing</button><button className="print" onClick={() => window.print()}>Print / save PDF</button></div></div><Preview document={document} data={data} items={items} total={total} /></div>}</main></div>;
+  return <div className="shell"><aside><div className="brand"><i>GA</i><div><b>Gurukrupan</b><small>Export documents</small></div></div><button className="new" onClick={newFile}>+ New export file</button><p className="nav-title">CUSTOMER EXPORT FILES</p><div className="file-list">{files.map((item) => <button className={`file-select ${item.id === fileId ? "selected" : ""}`} key={item.id} onClick={() => { setFileId(item.id); setNotice(""); }}><b>{item.label}</b><small>{item.stage}</small></button>)}</div><p className="nav-title">DOCUMENT FLOW</p>{documentSteps.map((step, index) => <button key={step.id} className={`step ${active === step.id ? "active" : ""}`} onClick={() => { setActive(step.id); setNotice(""); }}><i>{index + 1}</i><span><b>{step.title}</b><small>{data.completed?.[step.id] ? "Ready - click to edit" : step.party}</small></span></button>)}<div className="file-ref"><small>ACTIVE EXPORT FILE</small><b>{data.reference}</b><span>{file.stage}</span></div></aside><main><header className="top"><div><p>{file.customer} / {data.reference}</p><h1>{document.title}</h1></div><div className="tabs"><button className={view === "form" ? "chosen" : ""} onClick={() => setView("form")}>Edit form</button><button className={view === "preview" ? "chosen" : ""} onClick={() => setView("preview")}>A4 preview</button></div></header>{view === "form" ? <div className="content"><section className="summary"><div><small>BUYER / CUSTOMER</small><b>{data.buyer}</b></div><div><small>SUPPLIER</small><b>{data.supplier}</b></div><div><small>DOCUMENT TOTAL</small><b>USD {total}</b></div><div><small>STATUS</small><b className={data.completed?.[active] ? "ready" : "draft"}>{data.completed?.[active] ? "Ready" : "Draft"}</b></div></section><section className="card"><div className="section-title"><div><small>{document.short} · {document.party}</small><h2>Editable document fields</h2></div><button className="validate" onClick={validate}>Validate & save</button></div>{notice && <p className={`message ${notice.startsWith("Missing") ? "bad" : "good"}`}>{notice}</p>}<div className="fields">{fieldsByDocument[active].map((field) => <Field key={field} label={exactLabels[active][field]} name={field} value={data[field]} onChange={update} />)}</div></section><ItemTable active={active} items={items} onChange={updateItems} /><SourceDetail active={active} /></div> : <div className="preview-area"><div className="preview-bar"><span>Preview includes fixed text and editable values for this document.</span><div><button onClick={() => setView("form")}>Back to editing</button><button className="print" onClick={() => window.print()}>Print / save PDF</button></div></div><Preview document={document} data={data} items={items} total={total} /></div>}</main></div>;
 }
 
 export default App;
