@@ -1,51 +1,29 @@
 {
   "name": "gurukrupan-agl",
-  "description": "Gurukrupan AGL desktop application.",
-  "private": true,
   "version": "0.1.0",
+  "private": true,
+  "description": "Minimal React and Electron desktop application.",
   "type": "module",
   "main": "electron/main.cjs",
+  "engines": {
+    "node": ">=20.0.0 <25"
+  },
   "scripts": {
-    "dev": "vite",
-    "electron": "wait-on tcp:1420 && electron .",
+    "dev": "vite --host 127.0.0.1",
+    "electron": "wait-on tcp:5173 && electron .",
     "dev:desktop": "concurrently -k \"npm run dev\" \"npm run electron\"",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "start": "electron .",
-    "package": "npm run build && electron-builder",
-    "package:win": "npm run build && electron-builder --win"
+    "build": "vite build",
+    "start": "electron ."
   },
   "dependencies": {
-    "better-sqlite3": "^13.0.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.4.1",
-    "concurrently": "^10.0.5",
+    "concurrently": "^10.0.0",
     "electron": "^44.4.3",
-    "electron-builder": "^26.15.3",
-    "typescript": "~6.0.3",
     "vite": "^6.3.5",
-    "wait-on": "^9.1.0"
-  },
-  "build": {
-    "appId": "com.rohitchavda.gurukrupanagl",
-    "productName": "Gurukrupan AGL",
-    "files": [
-      "dist/**",
-      "electron/**",
-      "package.json"
-    ],
-    "asarUnpack": [
-      "node_modules/better-sqlite3/**"
-    ],
-    "win": {
-      "target": [
-        "nsis"
-      ]
-    }
+    "wait-on": "^9.0.0"
   }
 }

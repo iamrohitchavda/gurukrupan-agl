@@ -1,55 +1,45 @@
 # Gurukrupan AGL
 
-Gurukrupan AGL is a Windows desktop application built with React, TypeScript, Vite, and Electron.
+A minimal Windows-focused desktop application using React and Electron.
 
-## Current setup
+## Stack
 
-- **Desktop shell:** Electron
-- **User interface:** React 19 + TypeScript
-- **Frontend tooling:** Vite
-- **Local data:** SQLite, accessed only from Electron's main process
-- **Package manager:** npm
-- **Target:** Windows desktop, with the option to support other Electron platforms later
+- React 19
+- Electron 44
+- Vite 6
+- JavaScript
+- Node.js 20.15.1 (declared in `.nvmrc`)
 
-The repository begins on the `dev` branch. `main` is reserved for stable releases.
+There is intentionally no database, sync layer, Tauri code, or packaging setup yet. Those will be added only when the app's business requirements are defined.
 
 ## Requirements
 
-- Node.js 20.0 or later (current LTS recommended)
+- Node.js 20.0 or newer (Node 20.15.1 recommended)
 - npm
 
-Rust is not required. On a Windows development computer, Electron may request Microsoft C++ Build Tools if a native SQLite dependency needs to compile.
-
-The project uses Vite 6 for compatibility with Node.js 20, avoiding frontend native-binding requirements during normal development.
-
-## Run locally
+## Install and run
 
 ```bash
-npm install
+npm install --legacy-peer-deps --ignore-scripts --no-audit --no-fund
+node node_modules/electron/install.js
 npm run dev:desktop
 ```
 
-For a browser-only UI session:
+`npm run dev:desktop` starts Vite and opens the Electron desktop window. For a browser-only preview, use `npm run dev`.
 
-```bash
-npm run dev
-```
-
-## Build
+## Build the React interface
 
 ```bash
 npm run build
-npm run package:win
 ```
 
-## Planned data architecture
+## Structure
 
-Each installation stores data in its own local SQLite database, so it can work offline. SQLite is accessed in Electron's main process; the React interface receives only explicitly approved data through a secure IPC bridge.
+```text
+electron/        Electron main process and secure preload bridge
+src/             React interface
+```
 
-For multi-PC support, PC 1 will run a sync API and a master PostgreSQL database. Each installation will upload its pending local changes when PC 1 is available, then download changes made by other PCs. This avoids sharing a live SQLite file across the network. If PC 1 is offline, other PCs continue to work locally and sync later.
+## Project convention
 
-## Repository conventions
-
-- Build work on `dev`; merge tested, stable work into `main`.
-- Never commit `.env` files, SQLite database files, or generated build output.
-- Update this README whenever setup, architecture, commands, or developer requirements change.
+Work happens on `dev`; stable releases are merged into `main`. Update this README whenever the setup, commands, or architecture changes.

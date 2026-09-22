@@ -1,7 +1,5 @@
-const { contextBridge, ipcRenderer } = require("electron");
+const { contextBridge } = require("electron");
 
-contextBridge.exposeInMainWorld("gurukrupan", {
-  database: {
-    getStatus: () => ipcRenderer.invoke("database:status"),
-  },
+contextBridge.exposeInMainWorld("desktop", {
+  electronVersion: process.versions.electron,
 });
