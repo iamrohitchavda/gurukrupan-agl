@@ -16,6 +16,8 @@ Each document has its own PDF-derived schema: visible labels and table headings 
 
 The app now opens on an Export Flows dashboard. It shows every in-progress or completed flow and its document progress; opening a flow reveals its five-step document sequence in the left navigation. Sellers and buyers are managed in editable lists, and permanent deletion of a profile or export flow requires an explicit confirmation dialog.
 
+The seller/buyer manager uses a searchable table list with columns for name, address, contact, and email. Edit and Delete icon actions appear at the end of a row on hover; Edit opens that party's full profile form.
+
 A flow is marked **Ready** with a tick only after all five document forms have been validated and saved. Changing any field or goods line marks that specific form unvalidated again and changes the flow back to **In progress**.
 
 ## Requirements
