@@ -1,123 +1,36 @@
-export const company = {
-  name: "Gurukrupan Agro Limited",
-  cin: "U01820GJ2020PLC118253",
-  iec: "AAICG7050K",
-  gstin: "24AAICG7050K1ZH",
-  address: "Office No. 401, 4th Floor, Shivalik-7, Gondal Road, Rajkot-360002, Gujarat, India",
-  phone: "+91 99048 16700",
-  email: "ramguru.exports@gmail.com",
-};
+export const company = { name: "GURUKRUPAN AGRO LIMITED", cin: "U01820GJ2020PLC118253", iec: "AAICG7050K", gstin: "24AAICG7050K1ZH", address: "OFFICE NO. 401, 4TH FLOOR, SHIVALIK-7, GONDAL ROAD, RAJKOT-360002, GUJARAT, INDIA.", phone: "+91 99048 16700", email: "ramguru.exports@gmail.com" };
 
 export const documentSteps = [
-  { id: "purchaseOrder", short: "PO", title: "Purchase Order", party: "Supplier-facing" },
-  { id: "salesContract", short: "SC", title: "Sales Contract", party: "Buyer-facing" },
-  { id: "customsInvoice", short: "CI", title: "Customs Invoice / Packing List", party: "Customs-facing" },
-  { id: "commercialInvoice", short: "INV", title: "Commercial Invoice", party: "Buyer-facing" },
-  { id: "packingList", short: "PL", title: "Commercial Packing List", party: "Buyer-facing" },
+  { id: "purchaseOrder", short: "PO", title: "PURCHASE ORDER", party: "Seller / supplier" },
+  { id: "salesContract", short: "SC", title: "SALES CONTRACT", party: "Buyer / importer" },
+  { id: "customsInvoice", short: "CI", title: "INVOICE / PACKING", party: "Customs / shipping" },
+  { id: "commercialInvoice", short: "INV", title: "INVOICE", party: "Buyer / importer" },
+  { id: "packingList", short: "PL", title: "PACKING LIST", party: "Buyer / importer" },
 ];
 
-export const customers = ["WGK General Trading L.L.C."];
-export const suppliers = ["Ramji Trading Co."];
+export const defaultSellerProfiles = [{ id: "seller-ramji", name: "RAMJI TRADING CO.", address: "1ST FLOOR, SHOP NO. A-179, SHREE SARDAR VALLABHBHAI PATEL MARKET YARD, MORBI ROAD, BEDI, RAJKOT, GUJARAT. PIN CODE: 360003", contact: "", email: "", gstin: "" }];
+export const defaultBuyerProfiles = [{ id: "buyer-wgk", name: "WGK GENERAL TRADING L.L.C.", address: "DUBAI, UAE PO Box 10055", contact: "+971586872240", email: "operations.wgk@gmail.com", gstin: "" }];
+export const profileFields = [["name", "NAME"], ["address", "ADDRESS"], ["contact", "CONTACT NO."], ["email", "E-MAIL ID"], ["gstin", "GSTIN / TAX ID"]];
 
-export const initialFile = {
-  reference: "GAL/26-27/038",
-  buyer: "WGK General Trading L.L.C.",
-  supplier: "Ramji Trading Co.",
-  consigneeAddress: "Dubai, UAE, PO Box 10055",
-  buyerContact: "+971586872240",
-  buyerEmail: "operations.wgk@gmail.com",
-  notifyParty: "XXXXXXXXXXXXXXXXXXXXX",
-  invoiceDate: "2026-07-25",
-  paymentTerms: "Against B/L",
-  container: "01 X 40' FCL",
-  containerNo: "EITU1332739",
-  sealNo: "000791",
-  billNo: "XXXXXXXXXXXX",
-  billDate: "2026-07-30",
-  shippingBillNo: "0",
-  shippingBillDate: "2026-07-25",
-  origin: "India",
-  destination: "UAE",
-  portLoading: "Nhava Sheva, India",
-  portDischarge: "Jebel Ali, UAE",
-  vesselVoyage: "ESL WAFA / 026A9",
-  incoterm: "CNF",
-  commission: "1%",
-  netWeight: "9.500 MT",
-  grossWeight: "10.450 MT",
-  packageCount: "950",
-  marks: "TEJ PATTA | NET WT.: 10 KG | PKG. DT: 02/2026 | EXP. DT: 02/2028 | ORIGIN: INDIA",
-  purchaseTerms: "Commodity must confirm to the specific quality and weight. Shipping marks must be printed on each bag. Transport charges are paid by the supplier before dispatch. Subject to Rajkot jurisdiction, Gujarat.",
-  contractTerms: "Delivery by sea container on CNF Jebel Ali, UAE basis as per Incoterms 2020. Export standard packing suitable for sea freight. Buyer arranges insurance. Partial shipment and trans-shipment are not allowed.",
-  items: [
-    { id: "1", packages: "900 bags packed in 10 KGS PP bags each", product: "Indian Bay Leaf (Tejpatta)", hsCode: "09109990", quantity: "9.000", unit: "MT Net", gross: "9.900 MT", remarks: "", rate: "735.00", amount: "6615.00" },
-    { id: "2", packages: "50 boxes; each box contains 40 jars of 250 grams each", product: "Indian Bay Leaf (Tejpatta)", hsCode: "09109990", quantity: "0.500", unit: "MT Net", gross: "0.550 MT", remarks: "", rate: "735.00", amount: "367.50" },
-  ],
+export const fixedText = {
+  purchaseOrder: ["For, Buyer                                      For, Seller", "TERMS & CONDITIONS:-", "1. Commodity must confirm to the Specific Quality & Weight.", "2. Shipping Marks printed on each bag well otherwise charges will be borne by seller AIC.", "3. All transport charges paid by the supplier prior to dispatch.", "4. PO must be provided with the documents, penalty for supplier failure.", "5. Subject to Rajkot Jurisdiction, Gujarat."],
+  salesContract: ["We are ready and willing to supply the below mentioned Indian Commodities with full responsibility as per under stated Specifications and Terms & Conditions.", "DOCUMENTS REQUIRED: 1. INVOICE  2. PACKING LIST  3. CERTIFICATE OF ORIGIN  4. FUMIGATION CERTIFICATE  5. PHYTOSANITARY CERTIFICATE", "1. Delivery Terms: By sea, By Containers CNF Jebel Ali, UAE as per Incoterms 2020.", "2. This shipment is on a CNF basis, and no insurance has been arranged by us for the cargo. Therefore, all subsequent responsibility for the goods shall rest with the buyer.", "3. Packing: Export standard packing suitable for sea freight.", "4. Inspection: Pre-shipment inspection by Seller, third-party Inspection (SGS/BV) at buyer’s cost if buyer required.", "5. Quality Assurance: Goods shall conform to agreed specifications and Indian/international standards.", "6. Insurance: Arrange by Buyer, if they requires.", "7. Partial Shipment / Trans shipment: Not allowed.", "8. If there is any delay in shipment due to Shut Out of Containers, delay in normal schedule of Vessel, Buyer has to provide necessary extension of shipment, Seller shall not be responsible for any delay in transit over normal voyage time.", "9. Seller reserves the right to recall the documents if the same are not paid within 7 Calender days from the date of presentation.", "10. If Buyer fails to make payment of the documents as per Contract, the Seller reserves the right to protect his interest and accordingly this Contract acts as implied No Objection Certificate/Confirmation from Buyer to Seller to Transfer/Resell the Goods covered by this Contract to alternate Buyer. This clause therefore serve as valid No Objection Certificate to Customs or any statutory authorities to clear the Cargo. Under these circumstances, Seller can unconditionally choose to cancel the Contract and withdraw or re-route the documents and sell the Cargo as per the Seller's choice.", "11. This agreement is subject to Force Majeure if at any time during the continuation of this agreement either party is disabled to perform in whole or in part any obligation under this agreement because of Natural Disasters, Acts of God, War, Flood, Typhoon, Strike, Fire, Riots, Explosion, Government Regulation.", "12. No responsibility on the sellers for clearance of the goods at destination in any factor. Duties & Taxes in Country of destination to be for Buyer's account. All destuffing charges, THC/DDC at destination to be on Buyer's account.", "13. All disputes arising out of or in connection with the present contract shall be finally settled under the Rules of Arbitration of the FOSFA, London by one or more arbitrators appointed in accordance with the said Rules.", "14. The buyers agrees to pay the bills as per the terms above and if any overdue interests and cystalisations and other bank charges will be borne by the buyers."],
+  customsInvoice: ["NOTE: GOODS CLEARED UNDER LETTER OF UNDERTAKING, Application submitted on GST portal ARN Num: AD2404260064296 UNDER RULE 96 IGST RULES, 2017.", "REMARKS: 1, SUPPLY MEANT FOR EXPORT WITHOUT PAYMENT OF IGST. 2) DUTY DRAWBACK IF APPLICABLE 3), WE INTEND TO CLAIM REWARDS UNDER REMISSION OF DUTIES & TAXES ON EXPORT PRODUCT (RoDTEP) IF APPLICABLE.", "DECLARATION: We declare that this INVOICE shows the actual price of the goods described and that all particulars are true and correct."],
+  commercialInvoice: ["WE INTEND TO CLAIM REWARDS UNDER REMISSION OF DUTIES & TAXES ON EXPORT PRODUCT (RoDTEP) IF APPLICABLE.", "DECLARATION: We declare that this INVOICE shows the actual price of the goods described and that all particulars are True and Correct in all aspects."],
+  packingList: ["DECLARATION: We declare that this INVOICE shows the actual price of the goods described and that all particulars are True and Correct in all aspects."],
 };
 
-export const documentItems = {
-  purchaseOrder: [{ id: "po-1", packages: "-", product: "FENNEL SEEDS", hsCode: "", quantity: "", unit: "", rate: "", amount: "" }],
-  salesContract: [{ id: "sc-1", packages: "640 bags packed in 60 KG jute bags", product: "Indian Coffee Beans Robusta Cherry-AA", hsCode: "", quantity: "19.200", unit: "MT", rate: "0.00", amount: "0.00" }],
-  customsInvoice: initialFile.items,
-  commercialInvoice: initialFile.items,
-  packingList: initialFile.items,
+export const formSchemas = {
+  purchaseOrder: [["sellerProfileId", "SELLER", "sellerProfile", true], ["sellerName", "SELLER NAME", "text", true], ["sellerAddress", "SELLER ADDRESS", "textarea", true], ["poCommodity", "DESCRIPTION OF COMMODITY", "text", true], ["poQuantity", "QUANTITY"], ["poRate", "RATE"], ["poAmount", "AMOUNT"], ["poShippingMarks", "SHIPPING MARKS", "textarea"]],
+  salesContract: [["buyerProfileId", "BUYER", "buyerProfile", true], ["buyerName", "BUYER NAME", "text", true], ["buyerAddress", "BUYER ADDRESS", "textarea", true], ["salesContainer", "FCL", "text", true], ["salesCommodity", "DESCRIPTION OF COMMODITIES", "text", true], ["salesQuantity", "QUANTITY"], ["salesPacking", "PACKING", "textarea"], ["salesRate", "RATE US$"], ["salesAmount", "TOTAL"], ["deliveryTerms", "DELIVERY TERMS", "text", true]],
+  customsInvoice: [["invoiceNo", "INVOICE NO.", "text", true], ["invoiceDate", "INVOICE DT.", "date", true], ["buyerProfileId", "CONSIGNEE :-", "buyerProfile", true], ["buyerName", "CONSIGNEE NAME", "text", true], ["buyerAddress", "CONSIGNEE ADDRESS", "textarea", true], ["buyerContact", "CONTACT NO.:-"], ["buyerEmail", "E-MAIL ID:-"], ["notifyParty", "NOTIFY PARTY:-", "textarea"], ["paymentTerms", "PAYMENT TERMS", "text", true], ["container", "CONTAINER", "text", true], ["countryOrigin", "COUNTRY OF ORIGIN OF GOODS", "text", true], ["finalDestination", "COUNTRY OF FINAL DESTINATION", "text", true], ["portLoading", "PORT OF LOADING", "text", true], ["portDischarge", "PORT OF DISCHARGE", "text", true], ["commission", "COMMISSION"], ["totalPackages", "TOTAL PACKAGES"], ["totalNetWeight", "TOTAL WEIGHT / MT NET"], ["totalGrossWeight", "TOTAL WEIGHT / MT GROSS"], ["totalCnfValue", "TOTAL CNF VALUE IN US$"], ["amountWords", "AMOUNT IN WORDS", "textarea"]],
+  commercialInvoice: [["billNo", "B/L NO."], ["billDate", "B/L DT.", "date"], ["shippingBillNo", "SB NO."], ["shippingBillDate", "SB DT.", "date"], ["invoiceNo", "INVOICE NO.", "text", true], ["invoiceDate", "INVOICE DT.", "date", true], ["buyerProfileId", "CONSIGNEE:", "buyerProfile", true], ["buyerName", "CONSIGNEE NAME", "text", true], ["buyerAddress", "CONSIGNEE ADDRESS", "textarea", true], ["buyerContact", "CONTACT NO.:-"], ["buyerEmail", "E-MAIL ID:-"], ["notifyParty", "NOTIFY PARTY:-", "textarea"], ["paymentTerms", "PAYMENT TERMS", "text", true], ["container", "CONTAINER", "text", true], ["countryOrigin", "COUNTRY OF ORIGIN", "text", true], ["finalDestination", "FINAL DESTINATION", "text", true], ["portLoading", "PORT OF LOADING", "text", true], ["placeDelivery", "PLACE OF DELIVERY", "text", true], ["portDischarge", "PORT OF DISCHARGE", "text", true], ["vesselVoyage", "VESSEL / VOYAGE"], ["marksAndNo", "MARKS & NO.", "textarea"], ["containerNo", "CONTAINER NO."], ["sealNo", "SEAL NO."], ["totalPackages", "PACKAGES"], ["totalNetWeight", "TOTAL NET WEIGHT"], ["totalGrossWeight", "TOTAL GROSS WEIGHT"], ["commission", "COMMISSION"], ["totalCnfValue", "TOTAL CNF VALUE IN USD:-"], ["amountWords", "AMOUNT IN WORDS", "textarea"]],
+  packingList: [["billNo", "B/L NO."], ["billDate", "B/L DT.", "date"], ["shippingBillNo", "SB NO."], ["shippingBillDate", "SB DT.", "date"], ["invoiceNo", "INVOICE NO.", "text", true], ["invoiceDate", "INVOICE DT.", "date", true], ["buyerProfileId", "CONSIGNEE:-", "buyerProfile", true], ["buyerName", "CONSIGNEE NAME", "text", true], ["buyerAddress", "CONSIGNEE ADDRESS", "textarea", true], ["buyerContact", "CONTACT NO.:-"], ["buyerEmail", "E-MAIL ID:-"], ["notifyParty", "NOTIFY PARTY:-", "textarea"], ["paymentTerms", "PAYMENT TERMS", "text", true], ["container", "CONTAINER", "text", true], ["countryOrigin", "COUNTRY OF ORIGIN", "text", true], ["finalDestination", "FINAL DESTINATION", "text", true], ["portLoading", "PORT OF LOADING", "text", true], ["placeDelivery", "PLACE OF DELIVERY", "text", true], ["portDischarge", "PORT OF DISCHARGE", "text", true], ["vesselVoyage", "VESSEL / VOYAGE"], ["marksAndNo", "MARKS & NO.", "textarea"], ["containerNo", "CONTAINER NO."], ["sealNo", "SEAL"], ["totalPackages", "PACKAGES"], ["totalNetWeight", "TOTAL NET WEIGHT"], ["totalGrossWeight", "TOTAL GROSS WEIGHT"], ["commission", "COMMISSION"]],
 };
 
-export const sourceContent = {
-  purchaseOrder: {
-    companyHeader: "GURUKRUPAN AGRO LIMITED | CIN: U01820GJ2020PLC118253 | R.O.: Office No. 401, 4th Floor, Shivalik-7, C/O Future Capital Holdings, Gondal Road, Rajkot-360002, Gujarat, India | Contact: +91 9904816700 | E-mail: exports.gurukrupan@yahoo.com | Landline/Fax: 0218 2386700",
-    party: "RAMJI TRADING CO., 1st Floor, Shop No. A-179, Shree Sardar Vallabhbhai Patel Market Yard, Morbi Road, Bedi, Rajkot, Gujarat, PIN 360003.",
-    terms: [
-      "Commodity must confirm to the specific quality and weight.",
-      "Shipping marks printed on each bag; otherwise charges will be borne by seller AIC.",
-      "All transport charges paid by the supplier prior to dispatch.",
-      "PO must be provided with the documents; penalty for supplier failure.",
-      "Subject to Rajkot jurisdiction, Gujarat.",
-    ],
-  },
-  salesContract: {
-    cargo: "1 X 20 FCL Indian Coffee Beans Robusta Cherry-AA · 19.200 MT · 640 bags packing in 60 KG jute bags.",
-    documentSet: ["Invoice", "Packing List", "Certificate of Origin", "Fumigation Certificate", "Phytosanitary Certificate"],
-    commercialTerms: "1 X 20 FCL · 19.200 MT · CNF Jebel Ali, UAE · US$ 0.00 total.",
-    terms: [
-      "Delivery terms: by sea, by containers CNF Jebel Ali, UAE as per Incoterms 2020.",
-      "Shipment is CNF basis; no insurance arranged by seller, subsequent responsibility rests with buyer.",
-      "Export standard packing suitable for sea freight.",
-      "Pre-shipment inspection by seller; SGS/BV inspection at buyer cost if required.",
-      "Goods conform to agreed specifications and Indian/international standards.",
-      "Insurance arranged by buyer if required.",
-      "Partial shipment / trans-shipment: not allowed.",
-      "Buyer provides extension where shipment is delayed by shut-out containers or vessel scheduling; seller not responsible for transit delay.",
-      "Seller may recall documents if not paid within seven calendar days of presentation.",
-      "If buyer fails payment, seller may cancel, transfer/resell cargo, withdraw or re-route documents to another buyer.",
-      "Force majeure applies for natural disasters, acts of God, war, flood, typhoon, strike, fire, riots, explosion, or government regulation.",
-      "Buyer bears destination clearance, duties, taxes, destuffing, THC/DDC charges.",
-      "Disputes settled under FOSFA, London arbitration rules.",
-      "Buyer bears overdue interest, crystallisation, and bank charges.",
-    ],
-  },
-  customsInvoice: {
-    amountWords: "SIX THOUSAND NINE HUNDRED EIGHTY-TWO DOLLAR AND 50/100 ONLY.",
-    declaration: [
-      "Goods cleared under Letter of Undertaking, application submitted on GST portal ARN AD2404260064296, under Rule 96 IGST Rules, 2017.",
-      "No input tax credit of central or integrated goods and services tax has been availed for inputs or input services used in manufacture of export goods.",
-      "CENVAT credit on inputs or input services used for export goods has not been carried forward under the Central Goods and Services Act 2017.",
-      "Remarks: supply meant for export without payment of IGST; duty drawback if applicable; intent to claim RoDTEP rewards if applicable.",
-    ],
-  },
-  commercialInvoice: {
-    amountWords: "SIX THOUSAND, NINE HUNDRED EIGHTY TWO DOLLARS AND FIFTY CENTS ONLY.",
-    declaration: "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct in all aspects. We intend to claim RoDTEP rewards if applicable.",
-  },
-  packingList: {
-    declaration: "We declare that the particulars are true and correct in all aspects.",
-  },
-};
+export const tableHeaders = { customsInvoice: ["NO. & KIND OF PKGS", "DESCRIPTION OF COMMODITIES", "QUANTITY", "RATE US$", "AMOUNT"], commercialInvoice: ["KIND OF PKGS.", "DESCRIPTION OF COMMODITIES", "QUANTITY", "RATE USD", "AMOUNT"], packingList: ["KIND OF PKGS.", "DESCRIPTION OF COMMODITIES", "QUANTITY", "GROSS WT.", "REMARKS"] };
+const goods = [{ id: "1", packages: "900 BAGS PACKED IN 10KGS PP BAGS EACH", description: "INDIAN BAY LEAF (TEJPATTA)\nHS CODE (09109990)", quantity: "9.000 MT NET", rate: "735.000", amount: "6615.00", gross: "9.900 MT GROSS", remarks: "N/A" }, { id: "2", packages: "50 BOXES. EACH 10 KG BOX CONTAINS 40 JARS OF 250 GRAMS EACH", description: "INDIAN BAY LEAF (TEJPATTA)\nHS CODE (09109990)", quantity: "0.500 MT NET", rate: "735.000", amount: "367.50", gross: "0.550 MT GROSS", remarks: "N/A" }];
 
-const clone = (value) => JSON.parse(JSON.stringify(value));
-
-export const exportFiles = [
-  { id: "gal-038", label: "WGK · GAL/26-27/038", customer: "WGK General Trading L.L.C.", stage: "Invoices ready", data: { ...clone(initialFile), documentItems: clone(documentItems), completed: { customsInvoice: true, commercialInvoice: true, packingList: true } } },
-  { id: "wgk-coffee", label: "WGK · Coffee contract", customer: "WGK General Trading L.L.C.", stage: "Sales contract ready", data: { ...clone(initialFile), reference: "SC-WGK-COFFEE-001", container: "01 X 20' FCL", completed: { salesContract: true }, documentItems: clone(documentItems) } },
-  { id: "ramji-fennel", label: "Ramji · Fennel PO", customer: "Ramji Trading Co.", stage: "Purchase order ready", data: { ...clone(initialFile), reference: "PO-RAMJI-FENNEL-001", buyer: "Gurukrupan Agro Limited", supplier: "Ramji Trading Co.", completed: { purchaseOrder: true }, documentItems: clone(documentItems) } },
-];
+export const initialData = { sellerProfileId: "seller-ramji", sellerName: "RAMJI TRADING CO.", sellerAddress: defaultSellerProfiles[0].address, buyerProfileId: "buyer-wgk", buyerName: "WGK GENERAL TRADING L.L.C.", buyerAddress: defaultBuyerProfiles[0].address, buyerContact: defaultBuyerProfiles[0].contact, buyerEmail: defaultBuyerProfiles[0].email, invoiceNo: "GAL/26-27/038", invoiceDate: "2026-07-25", billNo: "XXXXXXXXXXXX", billDate: "2026-07-30", shippingBillNo: "0", shippingBillDate: "2026-07-25", notifyParty: "XXXXXXXXXXXXXXXXXXXXX\nDUBAI, UAE.", paymentTerms: "AGAINST BL", container: "01X40' FCL", containerNo: "EITU1332739", sealNo: "000791", countryOrigin: "INDIA", finalDestination: "UAE", portLoading: "NHAVA SHEVA, INDIA", placeDelivery: "JEBEL ALI, UAE", portDischarge: "JEBEL ALI, UAE", vesselVoyage: "ESL WAFA / 026A9", commission: "01%", totalPackages: "950", totalNetWeight: "9.500 MT NET", totalGrossWeight: "10.450 MT GROSS", totalCnfValue: "6982.50", marksAndNo: "TEJ PATTA\nNET WT.: 10 KG\nPKG. DT: 02/2026\nEXP. DT: 02/2028\nORIGIN: INDIA", amountWords: "SIX THOUSAND, NINE HUNDRED EIGHTY TWO DOLLARS AND FIFTY CENTS ONLY", poCommodity: "FENNEL SEEDS", poQuantity: "", poRate: "", poAmount: "", poShippingMarks: "", salesContainer: '1X20 " FCL', salesCommodity: "INDIAN COFFEE BEANS ROBUSTA CHERRY-AA", salesQuantity: "19.200 MT", salesPacking: "640 BAGS PACKING IN 60 KG JUTE BAGS.", salesRate: "0.00", salesAmount: "0.00", deliveryTerms: "CNF JEBEL ALI, UAE", completed: {}, documentItems: { customsInvoice: goods, commercialInvoice: goods, packingList: goods } };
+export const clone = (value) => JSON.parse(JSON.stringify(value));
+export const exportFiles = [{ id: "gal-038", label: "WGK · GAL/26-27/038", customer: "WGK GENERAL TRADING L.L.C.", stage: "Invoices ready", data: clone(initialData) }];

@@ -10,9 +10,9 @@ A minimal Windows-focused desktop application using React and Electron.
 - JavaScript
 - Node.js 20.15.1 (declared in `.nvmrc`)
 
-The current frontend implements the real five-document export workflow from the supplied forms: Purchase Order, Sales Contract, Customs Invoice/Packing List, Commercial Invoice, and Commercial Packing List. Its files and edits persist locally in the app through browser storage; SQLite and multi-PC sync will be added later. Print/save-PDF behavior uses the local print dialog.
+The current frontend implements the real five-document export workflow from the supplied forms: Purchase Order, Sales Contract, Customs Invoice/Packing List, Commercial Invoice, and Commercial Packing List. Its files, party profiles, and edits persist locally in the app through browser storage; SQLite and multi-PC sync will be added later. Print/save-PDF behavior uses the local print dialog.
 
-Visible form labels, punctuation, and document-table headings follow the corresponding printed labels in the supplied PDF rather than generic field names.
+Each document has its own PDF-derived schema: visible labels and table headings follow that individual printed form rather than a shared generic schema. Fixed printed content is separated from editable transaction values. The Party Profiles screen stores reusable seller and buyer/consignee details (name, address, contact, email, and GSTIN/tax ID); choosing a profile pre-fills the related form details while the saved document can still be edited independently later.
 
 ## Requirements
 

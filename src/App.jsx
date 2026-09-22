@@ -1,106 +1,61 @@
 import { useEffect, useMemo, useState } from "react";
-import { company, customers, documentItems, documentSteps, exportFiles, initialFile, sourceContent, suppliers } from "./exportData.js";
+import { company, defaultBuyerProfiles, defaultSellerProfiles, documentSteps, exportFiles, fixedText, formSchemas, initialData, profileFields, tableHeaders, clone } from "./exportData.js";
 import "./styles.css";
 import "./extra.css";
 
-const fieldsByDocument = {
-  purchaseOrder: ["supplier", "purchaseTerms"],
-  salesContract: ["buyer", "container", "incoterm", "portDischarge", "contractTerms"],
-  customsInvoice: ["buyer", "notifyParty", "reference", "invoiceDate", "paymentTerms", "container", "origin", "destination", "portLoading", "portDischarge", "commission"],
-  commercialInvoice: ["buyer", "notifyParty", "reference", "invoiceDate", "billNo", "billDate", "shippingBillNo", "shippingBillDate", "paymentTerms", "container", "vesselVoyage"],
-  packingList: ["buyer", "notifyParty", "reference", "invoiceDate", "billNo", "billDate", "containerNo", "sealNo", "marks", "packageCount", "netWeight", "grossWeight"],
-};
+const profileKeys = ["sellerProfileId", "buyerProfileId"];
 
-const exactLabels = {
-  purchaseOrder: { supplier: "SELLER", purchaseTerms: "TERMS & CONDITIONS" },
-  salesContract: { buyer: "BUYER", container: "FCL", incoterm: "DELIVERY TERMS", portDischarge: "PORT OF DISCHARGE", contractTerms: "TERMS & CONDITIONS" },
-  customsInvoice: { buyer: "CONSIGNEE :-", notifyParty: "NOTIFY PARTY :-", reference: "INVOICE NO.", invoiceDate: "INVOICE DT.", paymentTerms: "PAYMENT TERMS", container: "CONTAINER", origin: "COUNTRY OF ORIGIN OF GOODS", destination: "COUNTRY OF FINAL DESTINATION", portLoading: "PORT OF LOADING", portDischarge: "PORT OF DISCHARGE", commission: "COMMISSION" },
-  commercialInvoice: { buyer: "CONSIGNEE:", notifyParty: "NOTIFY PARTY:-", reference: "INVOICE NO.", invoiceDate: "INVOICE DT.", billNo: "B/L NO.", billDate: "B/L DT.", shippingBillNo: "SB NO.", shippingBillDate: "SB DT.", paymentTerms: "PAYMENT TERMS", container: "CONTAINER", vesselVoyage: "VESSEL / VOYAGE" },
-  packingList: { buyer: "CONSIGNEE:-", notifyParty: "NOTIFY PARTY:-", reference: "INVOICE NO.", invoiceDate: "INVOICE DT.", billNo: "B/L NO.", billDate: "B/L DT.", containerNo: "CONTAINER NO.", sealNo: "SEAL NO.", marks: "MARKS & NO.", packageCount: "TOTAL PACKAGES", netWeight: "TOTAL NET WEIGHT", grossWeight: "TOTAL GROSS WEIGHT" },
-};
-
-const exactTableHeaders = {
-  purchaseOrder: ["KIND OF PKGS.", "DESCRIPTION OF COMMODITIES", "HS CODE", "QUANTITY", "RATE", "AMOUNT"],
-  salesContract: ["KIND OF PKGS.", "DESCRIPTION OF COMMODITIES", "HS CODE", "QUANTITY", "RATE US$", "AMOUNT"],
-  customsInvoice: ["NO. & KIND OF PKGS", "DESCRIPTION OF COMMODITIES", "HS CODE", "QUANTITY", "RATE US$", "AMOUNT"],
-  commercialInvoice: ["KIND OF PKGS.", "DESCRIPTION OF COMMODITIES", "HS CODE", "QUANTITY", "RATE USD", "AMOUNT"],
-  packingList: ["KIND OF PKGS.", "DESCRIPTION OF COMMODITIES", "QUANTITY", "GROSS WT.", "REMARKS"],
-};
-
-const meta = {
-  reference: ["File / invoice reference", "text"], buyer: ["Buyer / customer", "customer"], supplier: ["Supplier", "supplier"], invoiceDate: ["Invoice date", "date"], notifyParty: ["Notify party", "text"], paymentTerms: ["Payment terms", "text"], container: ["Container", "text"], origin: ["Country of origin", "text"], destination: ["Final destination", "text"], portLoading: ["Port of loading", "text"], portDischarge: ["Port of discharge", "text"], vesselVoyage: ["Vessel / voyage", "text"], incoterm: ["Incoterm", "text"], commission: ["Commission", "text"], billNo: ["B/L number", "text"], billDate: ["B/L date", "date"], shippingBillNo: ["Shipping bill number", "text"], shippingBillDate: ["Shipping bill date", "date"], containerNo: ["Container number", "text"], sealNo: ["Seal number", "text"], packageCount: ["Total packages", "text"], netWeight: ["Total net weight", "text"], grossWeight: ["Total gross weight", "text"], marks: ["Marks & numbers", "textarea"], purchaseTerms: ["Purchase order terms", "textarea"], contractTerms: ["Sales contract terms", "textarea"],
-};
-
-function Field({ name, value, onChange, label }) {
-  const [, type] = meta[name];
-  if (type === "customer" || type === "supplier") {
-    const options = type === "customer" ? customers : suppliers;
-    return <label className="field"><span>{label}</span><select value={value} onChange={(event) => onChange(name, event.target.value)}>{options.map((option) => <option key={option}>{option}</option>)}</select></label>;
+function Field({ field, value, onChange, sellers, buyers }) {
+  const [key, label, type = "text", required] = field;
+  if (profileKeys.includes(key)) {
+    const options = type === "sellerProfile" ? sellers : buyers;
+    return <label className="field wide"><span>{label}{required && " *"}</span><select value={value || ""} onChange={(event) => onChange(key, event.target.value)}><option value="">Select a saved profile</option>{options.map((option) => <option key={option.id} value={option.id}>{option.name}</option>)}</select><small className="profile-help">Selecting a profile fills its saved details below. These document values remain editable.</small></label>;
   }
-  if (type === "textarea") return <label className="field wide"><span>{label}</span><textarea rows="4" value={value} onChange={(event) => onChange(name, event.target.value)} /></label>;
-  return <label className="field"><span>{label}</span><input type={type} value={value} onChange={(event) => onChange(name, event.target.value)} /></label>;
+  if (type === "textarea") return <label className="field wide"><span>{label}{required && " *"}</span><textarea rows="3" value={value || ""} onChange={(event) => onChange(key, event.target.value)} /></label>;
+  return <label className="field"><span>{label}{required && " *"}</span><input type={type} value={value || ""} onChange={(event) => onChange(key, event.target.value)} /></label>;
 }
 
-function ItemTable({ items, onChange, active }) {
-  const edit = (id, key, value) => onChange(items.map((item) => item.id === id ? { ...item, [key]: value } : item));
-  const headers = exactTableHeaders[active];
-  const isPackingList = active === "packingList";
-  return <section className="card items"><div className="section-title"><div><small>GOODS</small><h2>Commodity lines</h2></div><span>{items.length} lines</span></div><div className="table-wrap"><table><thead><tr>{headers.map((header) => <th key={header}>{header}</th>)}</tr></thead><tbody>{items.map((item) => <tr key={item.id}><td><textarea value={item.packages} onChange={(event) => edit(item.id, "packages", event.target.value)} /></td><td><input value={item.product} onChange={(event) => edit(item.id, "product", event.target.value)} />{isPackingList && <small>HS CODE: {item.hsCode}</small>}</td>{!isPackingList && <td><input value={item.hsCode} onChange={(event) => edit(item.id, "hsCode", event.target.value)} /></td>}<td><input value={item.quantity} onChange={(event) => edit(item.id, "quantity", event.target.value)} /><small>{item.unit}</small></td>{isPackingList ? <><td><input value={item.gross ?? ""} onChange={(event) => edit(item.id, "gross", event.target.value)} /></td><td><input value={item.remarks ?? ""} onChange={(event) => edit(item.id, "remarks", event.target.value)} /></td></> : <><td><input value={item.rate} onChange={(event) => edit(item.id, "rate", event.target.value)} /></td><td><input value={item.amount} onChange={(event) => edit(item.id, "amount", event.target.value)} /></td></>}</tr>)}</tbody></table></div></section>;
+function GoodsTable({ active, rows, onChange }) {
+  const headers = tableHeaders[active];
+  if (!headers) return null;
+  const packing = active === "packingList";
+  const edit = (id, key, value) => onChange(rows.map((row) => row.id === id ? { ...row, [key]: value } : row));
+  return <section className="card items"><div className="section-title"><div><small>VARIABLE GOODS LINES</small><h2>{headers.join(" · ")}</h2></div></div><div className="table-wrap"><table><thead><tr>{headers.map((header) => <th key={header}>{header}</th>)}</tr></thead><tbody>{rows.map((row) => <tr key={row.id}><td><textarea value={row.packages} onChange={(event) => edit(row.id, "packages", event.target.value)} /></td><td><textarea value={row.description} onChange={(event) => edit(row.id, "description", event.target.value)} /></td><td><input value={row.quantity} onChange={(event) => edit(row.id, "quantity", event.target.value)} /></td>{packing ? <><td><input value={row.gross} onChange={(event) => edit(row.id, "gross", event.target.value)} /></td><td><input value={row.remarks} onChange={(event) => edit(row.id, "remarks", event.target.value)} /></td></> : <><td><input value={row.rate} onChange={(event) => edit(row.id, "rate", event.target.value)} /></td><td><input value={row.amount} onChange={(event) => edit(row.id, "amount", event.target.value)} /></td></>}</tr>)}</tbody></table></div></section>;
 }
 
-function SourceDetail({ active }) {
-  const source = sourceContent[active];
-  const entries = Object.entries(source).filter(([key]) => !["terms", "declaration"].includes(key));
-  const terms = source.terms ?? (source.declaration ? [source.declaration] : []);
-  return <section className="source-detail"><div><small>ORIGINAL FORM CONTENT</small><h2>Fixed text retained from the source document</h2></div>{entries.map(([key, value]) => <div className="source-row" key={key}><b>{key.replace(/([A-Z])/g, " $1")}</b>{Array.isArray(value) ? <ul>{value.map((line) => <li key={line}>{line}</li>)}</ul> : <p>{value}</p>}</div>)}{terms.length > 0 && <div className="source-row"><b>Terms / declarations</b><ol>{terms.map((term) => <li key={term}>{term}</li>)}</ol></div>}</section>;
+function FixedText({ active }) { return <section className="source-detail"><div><small>FIXED PRINTED TEXT</small><h2>Retained from the supplied {documentSteps.find((step) => step.id === active).title} form</h2></div><ol>{fixedText[active].map((line) => <li key={line}>{line}</li>)}</ol></section>; }
+
+function Preview({ active, data }) {
+  const step = documentSteps.find((item) => item.id === active);
+  const schema = formSchemas[active]; const headers = tableHeaders[active]; const rows = data.documentItems?.[active] || [];
+  return <article className="a4"><header><div><h3>{company.name}</h3><p>IEC:- {company.iec} &nbsp; CIN:- {company.cin} &nbsp; GSTIN:- {company.gstin}</p><p>{company.address}</p><p>CONTACT:- {company.phone} &nbsp; E-MAIL:- {company.email}</p></div><b>{step.title}</b></header><hr /><div className="print-fields">{schema.filter(([key]) => !profileKeys.includes(key)).map(([key, label]) => <div key={key}><b>{label}</b><span>{data[key] || "-"}</span></div>)}</div>{headers && <table className="print-table"><thead><tr>{headers.map((header) => <th key={header}>{header}</th>)}</tr></thead><tbody>{rows.map((row) => <tr key={row.id}><td>{row.packages}</td><td>{row.description}</td><td>{row.quantity}</td><td>{active === "packingList" ? row.gross : row.rate}</td><td>{active === "packingList" ? row.remarks : row.amount}</td></tr>)}</tbody></table>}<section className="print-terms"><b>FIXED PRINTED TEXT</b><ol>{fixedText[active].map((line) => <li key={line}>{line}</li>)}</ol></section><footer><span>For, {company.name}</span><span>AUTHORIZED SIGNATORY</span></footer></article>;
 }
 
-function Preview({ document, data, items, total }) {
-  const source = sourceContent[document.id];
-  const rates = document.id !== "packingList";
-  const terms = source.terms ?? (source.declaration ? [source.declaration] : []);
-  return <article className="a4"><header><div><h3>{company.name}</h3><p>IEC: {company.iec} · CIN: {company.cin} · GSTIN: {company.gstin}</p><p>{company.address}</p></div><b>{document.id === "customsInvoice" ? "INVOICE / PACKING" : document.title.toUpperCase()}</b></header><hr /><div className="addresses"><p><b>{document.id === "purchaseOrder" ? "SUPPLIER" : "CONSIGNEE"}</b><br />{document.id === "purchaseOrder" ? source.party : <>{data.buyer}<br />{data.consigneeAddress}<br />{data.buyerEmail}</>}</p><p><b>NOTIFY PARTY</b><br />{data.notifyParty}<br />{data.consigneeAddress}</p></div><div className="print-meta"><span>Reference<b>{data.reference}</b></span><span>Payment terms<b>{data.paymentTerms}</b></span><span>Container<b>{data.container}</b></span><span>Port of discharge<b>{data.portDischarge}</b></span></div><table className="print-table"><thead><tr><th>Packages</th><th>Description</th><th>Qty.</th>{rates && <><th>Rate</th><th>Amount</th></>}</tr></thead><tbody>{items.map((item) => <tr key={item.id}><td>{item.packages}</td><td>{item.product}<br /><small>HS Code: {item.hsCode || "-"}</small></td><td>{item.quantity} {item.unit}</td>{rates && <><td>{item.rate}</td><td>{item.amount}</td></>}</tr>)}</tbody></table><div className="print-total"><span>Total packages <b>{data.packageCount}</b></span><span>Net weight <b>{data.netWeight}</b></span><span>Gross weight <b>{data.grossWeight}</b></span>{rates && <span>Total USD <b>{total}</b></span>}</div>{terms.length > 0 && <section className="print-terms"><b>Terms / declarations</b><ol>{terms.map((term) => <li key={term}>{term}</li>)}</ol></section>}<footer><span>Declaration: particulars are true and correct.</span><span>For, {company.name}<br /><br />Authorized Signatory</span></footer></article>;
+function Profiles({ sellers, buyers, setSellers, setBuyers, onBack }) {
+  const [kind, setKind] = useState("seller"); const profiles = kind === "seller" ? sellers : buyers; const setProfiles = kind === "seller" ? setSellers : setBuyers;
+  const [selectedId, setSelectedId] = useState(profiles[0]?.id || "");
+  useEffect(() => setSelectedId(profiles[0]?.id || ""), [kind]);
+  const selected = profiles.find((profile) => profile.id === selectedId) || profiles[0];
+  const update = (key, value) => setProfiles((current) => current.map((profile) => profile.id === selected?.id ? { ...profile, [key]: value } : profile));
+  const add = () => { const id = `${kind}-${Date.now()}`; setProfiles((current) => [...current, { id, name: `New ${kind}`, address: "", contact: "", email: "", gstin: "" }]); setSelectedId(id); };
+  return <div className="shell"><aside><div className="brand"><i>GA</i><div><b>Gurukrupan</b><small>Export documents</small></div></div><button className="new" onClick={onBack}>← Back to forms</button></aside><main><header className="top"><div><p>LOCAL DIRECTORY</p><h1>Party profiles</h1></div></header><div className="content"><section className="card"><div className="section-title"><div><small>REUSABLE DETAILS</small><h2>Seller and buyer profiles</h2></div><button className="validate" onClick={add}>+ Add {kind}</button></div><div className="profile-tabs"><button className={kind === "seller" ? "chosen" : ""} onClick={() => setKind("seller")}>Sellers</button><button className={kind === "buyer" ? "chosen" : ""} onClick={() => setKind("buyer")}>Buyers / Consignees</button></div><label className="field wide"><span>SELECT {kind.toUpperCase()}</span><select value={selected?.id || ""} onChange={(event) => setSelectedId(event.target.value)}>{profiles.map((profile) => <option key={profile.id} value={profile.id}>{profile.name}</option>)}</select></label><div className="fields">{profileFields.map(([key, label]) => <Field key={key} field={[key, label, key === "address" ? "textarea" : "text"]} value={selected?.[key] || ""} onChange={(_, value) => update(key, value)} sellers={sellers} buyers={buyers} />)}</div><p className="message good">Changes are saved locally. Select this profile in a form to pre-fill the latest saved details. The document can still be edited independently.</p></section></div></main></div>;
 }
 
 function App() {
-  const [files, setFiles] = useState(() => {
-    try {
-      const saved = window.localStorage.getItem("gurukrupan-export-files");
-      return saved ? JSON.parse(saved) : exportFiles;
-    } catch {
-      return exportFiles;
-    }
-  });
-  const [fileId, setFileId] = useState(exportFiles[0].id);
-  const [active, setActive] = useState("purchaseOrder");
-  const [view, setView] = useState("form");
-  const [notice, setNotice] = useState("");
-  const file = files.find((item) => item.id === fileId);
-  const data = file.data;
-  const document = documentSteps.find((item) => item.id === active);
-  const items = data.documentItems?.[active] ?? documentItems[active];
-  const total = useMemo(() => items.reduce((sum, item) => sum + (Number(item.amount) || 0), 0).toFixed(2), [items]);
-  const updateFile = (mutator) => setFiles((current) => current.map((item) => item.id === fileId ? mutator(item) : item));
-  useEffect(() => {
-    window.localStorage.setItem("gurukrupan-export-files", JSON.stringify(files));
-  }, [files]);
-  const update = (name, value) => updateFile((item) => ({ ...item, data: { ...item.data, [name]: value } }));
-  const updateItems = (nextItems) => updateFile((item) => ({ ...item, data: { ...item.data, documentItems: { ...item.data.documentItems, [active]: nextItems } } }));
-  const validate = () => {
-    const missing = fieldsByDocument[active].filter((field) => !String(data[field] || "").trim());
-    if (missing.length) return setNotice(`Missing: ${missing.map((field) => exactLabels[active][field]).join(", ")}`);
-    updateFile((item) => ({ ...item, stage: `${document.title} ready`, data: { ...item.data, completed: { ...item.data.completed, [active]: true } } }));
-    setNotice(`${document.title} is saved as ready. You can return to this export file and edit it at any time.`);
-  };
-  const newFile = () => {
-    const id = `new-${Date.now()}`;
-    const reference = `DRAFT-${files.length + 1}`;
-    const base = JSON.parse(JSON.stringify(initialFile));
-    setFiles((current) => [...current, { id, label: `New export · ${reference}`, customer: base.buyer, stage: "Draft", data: { ...base, reference, documentItems: JSON.parse(JSON.stringify(documentItems)), completed: {} } }]);
-    setFileId(id); setActive("purchaseOrder"); setView("form"); setNotice("New export file created. Select the buyer, supplier, and complete each document in sequence.");
-  };
-
-  return <div className="shell"><aside><div className="brand"><i>GA</i><div><b>Gurukrupan</b><small>Export documents</small></div></div><button className="new" onClick={newFile}>+ New export file</button><p className="nav-title">CUSTOMER EXPORT FILES</p><div className="file-list">{files.map((item) => <button className={`file-select ${item.id === fileId ? "selected" : ""}`} key={item.id} onClick={() => { setFileId(item.id); setNotice(""); }}><b>{item.label}</b><small>{item.stage}</small></button>)}</div><p className="nav-title">DOCUMENT FLOW</p>{documentSteps.map((step, index) => <button key={step.id} className={`step ${active === step.id ? "active" : ""}`} onClick={() => { setActive(step.id); setNotice(""); }}><i>{index + 1}</i><span><b>{step.title}</b><small>{data.completed?.[step.id] ? "Ready - click to edit" : step.party}</small></span></button>)}<div className="file-ref"><small>ACTIVE EXPORT FILE</small><b>{data.reference}</b><span>{file.stage}</span></div></aside><main><header className="top"><div><p>{file.customer} / {data.reference}</p><h1>{document.title}</h1></div><div className="tabs"><button className={view === "form" ? "chosen" : ""} onClick={() => setView("form")}>Edit form</button><button className={view === "preview" ? "chosen" : ""} onClick={() => setView("preview")}>A4 preview</button></div></header>{view === "form" ? <div className="content"><section className="summary"><div><small>BUYER / CUSTOMER</small><b>{data.buyer}</b></div><div><small>SUPPLIER</small><b>{data.supplier}</b></div><div><small>DOCUMENT TOTAL</small><b>USD {total}</b></div><div><small>STATUS</small><b className={data.completed?.[active] ? "ready" : "draft"}>{data.completed?.[active] ? "Ready" : "Draft"}</b></div></section><section className="card"><div className="section-title"><div><small>{document.short} · {document.party}</small><h2>Editable document fields</h2></div><button className="validate" onClick={validate}>Validate & save</button></div>{notice && <p className={`message ${notice.startsWith("Missing") ? "bad" : "good"}`}>{notice}</p>}<div className="fields">{fieldsByDocument[active].map((field) => <Field key={field} label={exactLabels[active][field]} name={field} value={data[field]} onChange={update} />)}</div></section><ItemTable active={active} items={items} onChange={updateItems} /><SourceDetail active={active} /></div> : <div className="preview-area"><div className="preview-bar"><span>Preview includes fixed text and editable values for this document.</span><div><button onClick={() => setView("form")}>Back to editing</button><button className="print" onClick={() => window.print()}>Print / save PDF</button></div></div><Preview document={document} data={data} items={items} total={total} /></div>}</main></div>;
+  const [files, setFiles] = useState(() => { try { return JSON.parse(localStorage.getItem("gurukrupan-export-files-v2")) || exportFiles; } catch { return exportFiles; } });
+  const [sellers, setSellers] = useState(() => { try { return JSON.parse(localStorage.getItem("gurukrupan-seller-profiles")) || defaultSellerProfiles; } catch { return defaultSellerProfiles; } });
+  const [buyers, setBuyers] = useState(() => { try { return JSON.parse(localStorage.getItem("gurukrupan-buyer-profiles")) || defaultBuyerProfiles; } catch { return defaultBuyerProfiles; } });
+  const [fileId, setFileId] = useState(files[0]?.id || ""); const [active, setActive] = useState("purchaseOrder"); const [view, setView] = useState("form"); const [notice, setNotice] = useState("");
+  const file = files.find((item) => item.id === fileId) || files[0]; const data = file?.data || clone(initialData); const step = documentSteps.find((item) => item.id === active); const schema = formSchemas[active]; const rows = data.documentItems?.[active] || [];
+  const total = useMemo(() => rows.reduce((sum, row) => sum + (Number(row.amount) || 0), 0).toFixed(2), [rows]);
+  useEffect(() => localStorage.setItem("gurukrupan-export-files-v2", JSON.stringify(files)), [files]); useEffect(() => localStorage.setItem("gurukrupan-seller-profiles", JSON.stringify(sellers)), [sellers]); useEffect(() => localStorage.setItem("gurukrupan-buyer-profiles", JSON.stringify(buyers)), [buyers]);
+  const updateFile = (transform) => setFiles((current) => current.map((item) => item.id === file.id ? transform(item) : item));
+  const update = (key, value) => { if (profileKeys.includes(key)) { const profile = (key === "sellerProfileId" ? sellers : buyers).find((item) => item.id === value); if (!profile) return; const values = key === "sellerProfileId" ? { sellerProfileId: value, sellerName: profile.name, sellerAddress: profile.address } : { buyerProfileId: value, buyerName: profile.name, buyerAddress: profile.address, buyerContact: profile.contact, buyerEmail: profile.email }; updateFile((item) => ({ ...item, customer: key === "buyerProfileId" ? profile.name : item.customer, data: { ...item.data, ...values } })); } else updateFile((item) => ({ ...item, data: { ...item.data, [key]: value } })); };
+  const updateRows = (nextRows) => updateFile((item) => ({ ...item, data: { ...item.data, documentItems: { ...item.data.documentItems, [active]: nextRows } } }));
+  const validate = () => { const missing = schema.filter(([key,,,required]) => required && !String(data[key] || "").trim()); if (missing.length) return setNotice(`Missing: ${missing.map(([, label]) => label).join(", ")}`); updateFile((item) => ({ ...item, stage: `${step.title} ready`, data: { ...item.data, completed: { ...item.data.completed, [active]: true } } })); setNotice(`${step.title} saved. You can reopen and edit it any time.`); };
+  const newFile = () => { const id = `new-${Date.now()}`; setFiles((current) => [...current, { id, label: `New export · DRAFT-${current.length + 1}`, customer: "", stage: "Draft", data: clone(initialData) }]); setFileId(id); setActive("purchaseOrder"); };
+  if (view === "profiles") return <Profiles sellers={sellers} buyers={buyers} setSellers={setSellers} setBuyers={setBuyers} onBack={() => setView("form")} />;
+  return <div className="shell"><aside><div className="brand"><i>GA</i><div><b>Gurukrupan</b><small>Export documents</small></div></div><button className="new" onClick={newFile}>+ New export file</button><button className="profiles-link" onClick={() => setView("profiles")}>Manage seller & buyer profiles</button><p className="nav-title">EXPORT FILES</p><div className="file-list">{files.map((item) => <button className={`file-select ${item.id === file.id ? "selected" : ""}`} key={item.id} onClick={() => { setFileId(item.id); setNotice(""); }}><b>{item.label}</b><small>{item.stage}</small></button>)}</div><p className="nav-title">DOCUMENT FLOW</p>{documentSteps.map((item, index) => <button key={item.id} className={`step ${active === item.id ? "active" : ""}`} onClick={() => { setActive(item.id); setNotice(""); }}><i>{index + 1}</i><span><b>{item.title}</b><small>{data.completed?.[item.id] ? "Ready - click to edit" : item.party}</small></span></button>)}</aside><main><header className="top"><div><p>{file.customer || "New export"} / {data.invoiceNo || "Draft"}</p><h1>{step.title}</h1></div><div className="tabs"><button className={view === "form" ? "chosen" : ""} onClick={() => setView("form")}>Edit form</button><button className={view === "preview" ? "chosen" : ""} onClick={() => setView("preview")}>A4 preview</button></div></header>{view === "form" ? <div className="content"><section className="summary"><div><small>SELLER</small><b>{data.sellerName}</b></div><div><small>CONSIGNEE</small><b>{data.buyerName}</b></div><div><small>DOCUMENT TOTAL</small><b>USD {total}</b></div><div><small>STATUS</small><b className={data.completed?.[active] ? "ready" : "draft"}>{data.completed?.[active] ? "Ready" : "Draft"}</b></div></section><section className="card"><div className="section-title"><div><small>{step.party.toUpperCase()} · VARIABLE FIELDS</small><h2>Fields from this specific printed form</h2></div><button className="validate" onClick={validate}>Validate & save</button></div>{notice && <p className={`message ${notice.startsWith("Missing") ? "bad" : "good"}`}>{notice}</p>}<div className="fields">{schema.map((field) => <Field key={field[0]} field={field} value={data[field[0]]} onChange={update} sellers={sellers} buyers={buyers} />)}</div></section><GoodsTable active={active} rows={rows} onChange={updateRows} /><FixedText active={active} /></div> : <div className="preview-area"><div className="preview-bar"><span>Fixed text stays fixed. These values come from this document only.</span><div><button onClick={() => setView("form")}>Back to editing</button><button className="print" onClick={() => window.print()}>Print / save PDF</button></div></div><Preview active={active} data={data} /></div>}</main></div>;
 }
 
 export default App;

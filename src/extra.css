@@ -14,6 +14,15 @@
 .source-row ul, .source-row ol { margin: 0; padding-left: 18px; }
 .source-row li + li { margin-top: 6px; }
 .preview-bar .print { background: #c88c20; margin-left: 8px; }
+.profiles-link { background: transparent; border: 1px solid #62887b; border-radius: 8px; color: #d8e9e1; cursor: pointer; font-size: .75rem; margin-top: 10px; padding: 10px; text-align: left; }
+.profile-help { color: #607078; display: block; font-size: .72rem; line-height: 1.4; margin-top: 7px; }
+.profile-tabs { display: flex; gap: 8px; margin: 20px 0; }
+.profile-tabs button { background: #edf3f0; border: 0; border-radius: 7px; color: #36554a; cursor: pointer; padding: 9px 12px; }
+.profile-tabs .chosen { background: #173e33; color: white; }
+.print-fields { display: grid; gap: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 14px; }
+.print-fields div { border: 1px solid #c8d2ce; margin: -1px 0 0 -1px; min-height: 48px; padding: 6px 8px; }
+.print-fields b { display: block; font-size: .52rem; letter-spacing: .04em; }
+.print-fields span { display: block; font-size: .65rem; margin-top: 5px; white-space: pre-wrap; }
 @media print {
   body { background: white; min-width: 0; }
   .shell > aside, .top, .preview-bar { display: none !important; }
