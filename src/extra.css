@@ -1,0 +1,23 @@
+.file-list { display: grid; gap: 6px; }
+.file-select { background: #1b453a; border: 1px solid transparent; border-radius: 7px; color: #d8e9e1; cursor: pointer; padding: 9px; text-align: left; }
+.file-select:hover, .file-select.selected { border-color: #d99d32; }
+.file-select b, .file-select small { display: block; }
+.file-select b { font-size: .74rem; }
+.file-select small { color: #a6c4b8; font-size: .66rem; margin-top: 3px; }
+.ready { color: #11714f; }
+.source-detail { background: #fbfaf6; border: 1px solid #ded7c4; border-radius: 12px; margin-top: 18px; padding: 24px; }
+.source-detail > div:first-child small { color: #9b711f; font-size: .67rem; font-weight: 800; letter-spacing: .07em; }
+.source-detail h2 { font-size: 1.03rem; margin: 4px 0 18px; }
+.source-row { border-top: 1px solid #e5decb; display: grid; gap: 16px; grid-template-columns: 170px 1fr; padding: 13px 0; }
+.source-row b { font-size: .78rem; text-transform: capitalize; }
+.source-row p, .source-row li { color: #536159; font-size: .78rem; line-height: 1.5; margin: 0; }
+.source-row ul, .source-row ol { margin: 0; padding-left: 18px; }
+.source-row li + li { margin-top: 6px; }
+.preview-bar .print { background: #c88c20; margin-left: 8px; }
+@media print {
+  body { background: white; min-width: 0; }
+  .shell > aside, .top, .preview-bar { display: none !important; }
+  .shell > main { overflow: visible; }
+  .preview-area { background: white; padding: 0; }
+  .a4 { box-shadow: none; margin: 0; min-height: 0; page-break-after: always; width: 100%; }
+}

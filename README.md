@@ -25,7 +25,9 @@ node node_modules/electron/install.js
 npm run dev:desktop
 ```
 
-`npm run dev:desktop` starts Vite and opens the Electron desktop window. It includes linked document navigation, editable variable fields, buyer/supplier dropdowns, line-item calculations, validation, and an A4-style preview. For a browser-only preview, use `npm run dev`.
+`npm run dev:desktop` starts Vite and opens the Electron desktop window. It includes multiple customer export files, linked document navigation, editable variable fields, buyer/supplier dropdowns, line-item calculations, validation, A4 previews, and print/save-PDF access. For a browser-only preview, use `npm run dev`.
+
+The supplied PDF contains three different real sample transactions: a Ramji/Fennel purchase order, a WGK/Coffee sales contract, and WGK/Tejpatta invoice documents. The frontend preserves them as separate source export files so values are not incorrectly mixed. A new export file can be created, left in draft at any step, reopened later, edited, validated, and printed.
 
 ## Build the React interface
 
