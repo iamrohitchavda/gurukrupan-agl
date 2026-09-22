@@ -16,6 +16,8 @@ Each document has its own PDF-derived schema: visible labels and table headings 
 
 The app now opens on an Export Flows dashboard. It shows every in-progress or completed flow and its document progress; opening a flow reveals its five-step document sequence in the left navigation. Sellers and buyers are managed in editable lists, and permanent deletion of a profile or export flow requires an explicit confirmation dialog.
 
+A flow is marked **Ready** with a tick only after all five document forms have been validated and saved. Changing any field or goods line marks that specific form unvalidated again and changes the flow back to **In progress**.
+
 ## Requirements
 
 - Node.js 20.0 or newer (Node 20.15.1 recommended)
