@@ -14,6 +14,8 @@ The current frontend implements the real five-document export workflow from the 
 
 Each document has its own PDF-derived schema: visible labels and table headings follow that individual printed form rather than a shared generic schema. Fixed printed content is separated from editable transaction values. The Party Profiles screen stores reusable seller and buyer/consignee details (name, address, contact, email, and GSTIN/tax ID); choosing a profile pre-fills the related form details while the saved document can still be edited independently later.
 
+The app now opens on an Export Flows dashboard. It shows every in-progress or completed flow and its document progress; opening a flow reveals its five-step document sequence in the left navigation. Sellers and buyers are managed in editable lists, and permanent deletion of a profile or export flow requires an explicit confirmation dialog.
+
 ## Requirements
 
 - Node.js 20.0 or newer (Node 20.15.1 recommended)
