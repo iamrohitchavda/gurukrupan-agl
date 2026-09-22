@@ -10,7 +10,7 @@ A minimal Windows-focused desktop application using React and Electron.
 - JavaScript
 - Node.js 20.15.1 (declared in `.nvmrc`)
 
-There is intentionally no database, sync layer, Tauri code, or packaging setup yet. Those will be added only when the app's business requirements are defined.
+The current frontend implements the real five-document export workflow from the supplied forms: Purchase Order, Sales Contract, Customs Invoice/Packing List, Commercial Invoice, and Commercial Packing List. It uses in-memory values from those documents only; no database, sync layer, or PDF download behavior has been added yet.
 
 ## Requirements
 
@@ -25,7 +25,7 @@ node node_modules/electron/install.js
 npm run dev:desktop
 ```
 
-`npm run dev:desktop` starts Vite and opens the Electron desktop window. For a browser-only preview, use `npm run dev`.
+`npm run dev:desktop` starts Vite and opens the Electron desktop window. It includes linked document navigation, editable variable fields, buyer/supplier dropdowns, line-item calculations, validation, and an A4-style preview. For a browser-only preview, use `npm run dev`.
 
 ## Build the React interface
 
